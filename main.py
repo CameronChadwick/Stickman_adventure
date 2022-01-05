@@ -1,49 +1,44 @@
-import math
-import pygame
-import random
-# in terminal -> pip install pygame
+import pygame as pg
+import sprites
+from settings import *
 
-# color constants
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-BLACK = (0, 0, 0)
+pg.init()
 
+# Set Base Screen
+screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+pg.display.set_caption("Card Game")
 
-# game constants
-DISPLAY_WIDTH = 800
-DISPLAY_HEIGHT = 400
+playing = True
 
-SIZE = (DISPLAY_WIDTH, DISPLAY_HEIGHT)
-FPS = 60
+# bg_image = pg.image.load
 
-##########################################################################
+card = sprites.SpriteSheet("Assets/deck_of_cards.png")
+x_margin = 12
+y_margin = 2
+x_pad = 22
+y_pad = 4
 
-pygame.init()
+ace_hrts = card.image_at(9, 2, 44, 59)
+# card_list = card.load_grid_images(4, 14, x_margin, x_pad, y_margin, y_pad)
+# print(card_list)
 
-screen = pygame.display.set_mode(SIZE)
-pygame.display.set_caption("Pygame Picture")
+clock = pg.time.Clock()
 
-clock = pygame.time.Clock()
+while playing:
 
-running = True
+   clock.tick(FPS)
 
-while running:
+   for event in pg.event.get():
+       if event.type == pg.QUIT:
+           playing = False
+       if event.type == pg.KEYDOWN:    # allow for q key to quit the game
+           if event.key == pg.K_q:
+               playing == False
 
-    for event in pygame.event.get():
+   screen.fill(BLACK)
 
-        # check for user input
-        if event.type == pygame.QUIT:
-            running = False
+   screen.blit(ace_hrts, (100, 100))
 
-    # game logic
+   pg.display.flip()
 
-    screen.fill(WHITE)
-
-    pygame.display.flip()
-
-    clock.tick(FPS)
-
-# quit
-pygame.quit()
+pg.quit()
