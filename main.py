@@ -1,44 +1,50 @@
 import pygame as pg
 import sprites
 from settings import *
+from sprites import Blocks
 
 pg.init()
 
 # Set Base Screen
-screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-pg.display.set_caption("Card Game")
+screen = pg.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
+pg.display.set_caption("platformer")
+
+# sprite groups
+blocks_group = pg.sprite.Group()
+
+# testblock = Blocks("Assets/")
+# blocks_group.add(testblock)
 
 playing = True
 
-# bg_image = pg.image.load
-
-card = sprites.SpriteSheet("Assets/deck_of_cards.png")
-x_margin = 12
-y_margin = 2
-x_pad = 22
+platforms = sprites.SpriteSheet("Assets/OpenGunnerStarterTiles.png")
+x_margin = 21
+y_margin = 206
+x_pad = 4
 y_pad = 4
+width = 50
+height = 50
 
-ace_hrts = card.image_at(9, 2, 44, 59)
-# card_list = card.load_grid_images(4, 14, x_margin, x_pad, y_margin, y_pad)
-# print(card_list)
+blocks = platforms.load_grid_images(3, 3, x_margin, x_pad, y_margin, y_pad, width, height)
 
 clock = pg.time.Clock()
 
 while playing:
 
-   clock.tick(FPS)
+    clock.tick(FPS)
 
-   for event in pg.event.get():
-       if event.type == pg.QUIT:
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
            playing = False
-       if event.type == pg.KEYDOWN:    # allow for q key to quit the game
-           if event.key == pg.K_q:
-               playing == False
+        if event.type == pg.KEYDOWN:    # allow for q key to quit the game
+            if event.key == pg.K_q:
+                playing = False
 
-   screen.fill(BLACK)
+    screen.fill(BLACK)
 
-   screen.blit(ace_hrts, (100, 100))
+    # blocks_group.draw(screen)
+    screen.blit(blocks[0], (100, 100))
 
-   pg.display.flip()
+    pg.display.flip()
 
 pg.quit()
