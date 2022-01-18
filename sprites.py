@@ -71,6 +71,35 @@ class SpriteSheet:
         return self.images_at(sprite_rects, colorkey)
 
 
-class Blocks():
-    def __init__(self, image):
-        self.image = pygame.image.load(image)
+class Layout1():
+    def __init__(self):
+        tile_sheet = SpriteSheet("Assets/OpenGunnerStarterTiles.png")
+        brick = tile_sheet.image_at((75, 260, 50, 50))
+        brick = pg.transform.scale(brick, (TILE_SIZE, TILE_SIZE))
+        platform = tile_sheet.image_at((650, 633, 25, 26))
+        platform = pg.transform.scale(platform, (TILE_SIZE, TILE_SIZE))
+
+        self.tile_list = []
+
+        for i, row in enumerate(LAYOUT):
+            for j, col in enumerate(row):
+                x_val = j * TILE_SIZE
+                y_val = i * TILE_SIZE
+
+                if col == "1":
+                    image_rect = brick.get_rect()
+                    image_rect.x = x_val
+                    image_rect.y = y_val
+                    tile = (brick, image_rect)
+                    self.tile_list.append(tile)
+
+                if col == "2":
+                    image_rect = platform.get_rect()
+                    image_rect.x = x_val
+                    image_rect.y = y_val
+                    tile = (platform, image_rect)
+                    self.tile_list.append(tile)
+
+    def update(self):
+        for tile in self.tile_list:
+            SCREEN.blit(tile[0], tile[1])
