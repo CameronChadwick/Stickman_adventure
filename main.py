@@ -19,7 +19,7 @@ while playing:
 
     for event in pg.event.get():
         if event.type == pg.KEYDOWN:    # allow for q key to quit the game
-            if event.key == pg.K_q:
+            if event.key == pg.K_ESCAPE:
                 playing = False
         if event.type == pg.QUIT:
            playing = False

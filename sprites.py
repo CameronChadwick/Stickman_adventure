@@ -103,3 +103,13 @@ class Layout1():
     def update(self):
         for tile in self.tile_list:
             SCREEN.blit(tile[0], tile[1])
+
+
+class Player():
+    def __init__(self):
+        tile_sheet = SpriteSheet("Assets/OpenGunnerHeroVer2.png")
+        player_idle_r = tile_sheet.image_at((24, 143, 50, 50))
+        player_jump_r = tile_sheet.image_at((126, 143, 50, 50))
+        player_idle_l = tile_sheet.image_at((24, 200, 50, 50))
+        player_jump_l = tile_sheet.image_at((126, 200, 50, 50))
+        running = tile_sheet.load_grid_images(2, 8, 315, 10, 24, 1, 50, 50)
