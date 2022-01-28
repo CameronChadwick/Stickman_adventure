@@ -106,10 +106,91 @@ class Layout1():
 
 
 class Player():
-    def __init__(self):
+    def __init__(self, tile_size, tiles):
         tile_sheet = SpriteSheet("Assets/OpenGunnerHeroVer2.png")
-        player_idle_r = tile_sheet.image_at((24, 143, 50, 50))
-        player_jump_r = tile_sheet.image_at((126, 143, 50, 50))
-        player_idle_l = tile_sheet.image_at((24, 200, 50, 50))
-        player_jump_l = tile_sheet.image_at((126, 200, 50, 50))
-        running = tile_sheet.load_grid_images(2, 8, 315, 10, 24, 1, 50, 50)
+        self.player_idle_r = tile_sheet.image_at((24, 143, 50, 50))
+        self.player_jump_r = tile_sheet.image_at((126, 143, 50, 50))
+        self.player_idle_l = tile_sheet.image_at((24, 200, 50, 50))
+        self.player_jump_l = tile_sheet.image_at((126, 200, 50, 50))
+        self.run_rt = []
+        self.run_lft = []
+
+        rt1 = tile_sheet.image_at((24, 315, 50, 50), -1)
+        self.run_rt.append(rt1)
+        rt2 = tile_sheet.image_at((75, 315, 50, 50), -1)
+        self.run_rt.append(rt2)
+        rt3 = tile_sheet.image_at((126, 315, 50, 50), -1)
+        self.run_rt.append(rt3)
+        rt4 = tile_sheet.image_at((177, 315, 50, 50), -1)
+        self.run_rt.append(rt4)
+        rt5 = tile_sheet.image_at((228, 315, 50, 50), -1)
+        self.run_rt.append(rt5)
+        rt6 = tile_sheet.image_at((279, 315, 50, 50), -1)
+        self.run_rt.append(rt6)
+        rt7 = tile_sheet.image_at((330, 315, 50, 50), -1)
+        self.run_rt.append(rt7)
+        rt8 = tile_sheet.image_at((381, 315, 50, 50), -1)
+        self.run_rt.append(rt8)
+
+        lft1 = tile_sheet.image_at((24, 375, 50, 50), -1)
+        self.run_lft.append(lft1)
+        lft2 = tile_sheet.image_at((75, 375, 50, 50), -1)
+        self.run_lft.append(lft2)
+        lft3 = tile_sheet.image_at((126, 375, 50, 50), -1)
+        self.run_lft.append(lft3)
+        lft4 = tile_sheet.image_at((177, 375, 50, 50), -1)
+        self.run_lft.append(lft4)
+        lft5 = tile_sheet.image_at((228, 375, 50, 50), -1)
+        self.run_lft.append(lft5)
+        lft6 = tile_sheet.image_at((279, 375, 50, 50), -1)
+        self.run_lft.append(lft6)
+        lft7 = tile_sheet.image_at((330, 375, 50, 50), -1)
+        self.run_lft.append(lft7)
+        lft8 = tile_sheet.image_at((381, 375, 50, 50), -1)
+        self.run_lft.append(lft8)
+
+        self.tile_size = tile_size
+        self.tiles = tiles
+        self.last = pygame.time.get_ticks()
+        self.image_delay = 100
+        self.current_frame = 0
+        self.image = self.player_idle_r
+        self.right = True
+        self.left = False
+
+    def update(self):
+        dx = 0
+        dy = 0
+
+        keys = pg.key.get_pressed()
+        if keys[pg.K_RIGHT]:
+            self.left = False
+            self.right = True
+            dx = 5
+            now = pg.time.get_ticks()
+
+            if now - self.last >= self.image_delay:
+                self.last = now
+                self.current_frame = (self.current_frame + 1) % len(self.run_rt)
+                self.image = self.run_rt[self.current_frame]
+
+        elif keys[pg.K_LEFT]:
+            self.left = True
+            self.right = False
+            dx = -5
+            now = pg.time.get_ticks()
+            if now - self.last >= self.image_delay:
+                self.last = now
+                if self.current_frame >= len(self.run_rt):
+                    self.current_frame = 0
+
+                self.image = self.run_lft[self.current_frame]
+                self.current_frame = +1
+
+        else:
+            self.current_frame = 0
+            dx = 0
+            if self.right:
+                self.image = self.player_idle_r
+            elif self.left:
+                self.image = self.player_idle_l
