@@ -8,6 +8,7 @@ pg.init()
 pg.display.set_caption("platformer")
 
 level1 = sprites.Layout1()
+player = sprites.Player(100, 500, 25, 2)
 
 playing = True
 
@@ -27,6 +28,7 @@ while playing:
     SCREEN.fill(BLUE)
 
     level1.update()
+    player.update()
 
     pg.display.flip()
 

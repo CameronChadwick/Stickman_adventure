@@ -106,12 +106,18 @@ class Layout1():
 
 
 class Player():
-    def __init__(self, tile_size, tiles):
+    def __init__(self, x, y, tile_size, tiles):
+        self.tile_size = tile_size
+        self.tiles = tiles
+
         tile_sheet = SpriteSheet("Assets/OpenGunnerHeroVer2.png")
-        self.player_idle_r = tile_sheet.image_at((24, 143, 50, 50))
-        self.player_jump_r = tile_sheet.image_at((126, 143, 50, 50))
-        self.player_idle_l = tile_sheet.image_at((24, 200, 50, 50))
-        self.player_jump_l = tile_sheet.image_at((126, 200, 50, 50))
+
+        self.player_r = tile_sheet.image_at((24, 143, 50, 50), -1)
+        self.stand_r = pg.transform.scale(self.player_r, (2 * self.tile_size, 2 * self.tile_size))
+
+        self.player_l = tile_sheet.image_at((24, 200, 50, 50), -1)
+        self.stand_l = pg.transform.scale(self.player_l, (2 * self.tile_size, 2 * self.tile_size))
+
         self.run_rt = []
         self.run_lft = []
 
@@ -149,14 +155,17 @@ class Player():
         lft8 = tile_sheet.image_at((381, 375, 50, 50), -1)
         self.run_lft.append(lft8)
 
-        self.tile_size = tile_size
-        self.tiles = tiles
+        self.image = self.stand_r
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
         self.last = pygame.time.get_ticks()
         self.image_delay = 100
         self.current_frame = 0
-        self.image = self.player_idle_r
         self.right = True
         self.left = False
+        self.jumping = False
+        self.velo_y = 0
 
     def update(self):
         dx = 0
@@ -181,16 +190,32 @@ class Player():
             now = pg.time.get_ticks()
             if now - self.last >= self.image_delay:
                 self.last = now
-                if self.current_frame >= len(self.run_rt):
-                    self.current_frame = 0
-
+                self.current_frame = (self.current_frame + 1) % len(self.run_lft)
                 self.image = self.run_lft[self.current_frame]
-                self.current_frame = +1
 
         else:
             self.current_frame = 0
             dx = 0
             if self.right:
-                self.image = self.player_idle_r
+                self.image = self.stand_r
             elif self.left:
-                self.image = self.player_idle_l
+                self.image = self.stand_l
+
+        # gravity
+        self.velo_y += 1
+        if self.velo_y > 10:
+            self.velo_y = 10
+        dy += self.velo_y
+
+        # collision
+        for tile in self.tiles:
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y,
+                                   self.rect.width, self.rect.height):
+                dx = 0
+
+        # update position
+        self.rect.x += dx
+        self.rect.y += dy
+
+        # draw to screen
+        SCREEN.blit(self.image, self.rect)
