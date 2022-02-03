@@ -8,7 +8,8 @@ pg.init()
 pg.display.set_caption("platformer")
 
 level1 = sprites.Layout1()
-player = sprites.Player(100, 500, 25, 2)
+layout_list = level1.get_layout()
+player = sprites.Player(100, 500, 25, layout_list)
 
 playing = True
 

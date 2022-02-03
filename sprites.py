@@ -104,11 +104,14 @@ class Layout1():
         for tile in self.tile_list:
             SCREEN.blit(tile[0], tile[1])
 
+    def get_layout(self):
+        return self.tile_list
+
 
 class Player():
-    def __init__(self, x, y, tile_size, tiles):
+    def __init__(self, x, y, tile_size, tile_set):
         self.tile_size = tile_size
-        self.tiles = tiles
+        self.tile_set = tile_set
 
         tile_sheet = SpriteSheet("Assets/OpenGunnerHeroVer2.png")
 
@@ -164,8 +167,9 @@ class Player():
         self.current_frame = 0
         self.right = True
         self.left = False
-        self.jumping = False
         self.velo_y = 0
+        self.jumping = False
+        self.falling = False
 
     def update(self):
         dx = 0
@@ -203,15 +207,23 @@ class Player():
 
         # gravity
         self.velo_y += 1
-        if self.velo_y > 10:
+        if self.velo_y >= 10:
             self.velo_y = 10
         dy += self.velo_y
 
         # collision
-        for tile in self.tiles:
+        for tile in self.tile_set:
             if tile[1].colliderect(self.rect.x + dx, self.rect.y,
                                    self.rect.width, self.rect.height):
                 dx = 0
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy,
+                                   self.rect.width, self.rect.height):
+                if self.velo_y < 0:
+                    dy = tile[1].bottom - self.rect.top
+                    self.velo_y = 0
+                elif self.velo_y > 0:
+                    dy = tile[1].top - self.rect.bottom
+                    self.velo_y = 0
 
         # update position
         self.rect.x += dx
