@@ -167,9 +167,9 @@ class Player():
         self.current_frame = 0
         self.right = True
         self.left = False
-        self.velo_y = 0
         self.jumping = False
-        self.falling = False
+        self.velo_y = -30
+        self.gravity = 5
 
     def update(self):
         dx = 0
@@ -205,11 +205,13 @@ class Player():
             elif self.left:
                 self.image = self.stand_l
 
+        # jumping
+        if keys[pg.K_SPACE] and not self.jumping:
+            dy = self.velo_y
+            self.jumping = True
+
         # gravity
-        self.velo_y += 1
-        if self.velo_y >= 10:
-            self.velo_y = 10
-        dy += self.velo_y
+        dy += self.gravity
 
         # collision
         for tile in self.tile_set:
@@ -218,12 +220,11 @@ class Player():
                 dx = 0
             if tile[1].colliderect(self.rect.x, self.rect.y + dy,
                                    self.rect.width, self.rect.height):
-                if self.velo_y < 0:
+                if dy < 0:
                     dy = tile[1].bottom - self.rect.top
-                    self.velo_y = 0
-                elif self.velo_y > 0:
+                elif dy > 0:
                     dy = tile[1].top - self.rect.bottom
-                    self.velo_y = 0
+                    self.jumping = False
 
         # update position
         self.rect.x += dx
