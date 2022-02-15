@@ -9,7 +9,7 @@ pg.display.set_caption("platformer")
 
 level1 = sprites.Layout1()
 layout_list = level1.get_layout()
-player = sprites.Player(75, 75, 25, layout_list)
+player = sprites.Player(75, 550, 25, layout_list)
 
 playing = True
 
@@ -24,7 +24,7 @@ while playing:
             if event.key == pg.K_ESCAPE:
                 playing = False
         if event.type == pg.QUIT:
-           playing = False
+            playing = False
 
     SCREEN.fill(BLUE)
 

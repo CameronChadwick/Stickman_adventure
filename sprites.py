@@ -100,6 +100,9 @@ class Layout1():
                     tile = (platform, image_rect)
                     self.tile_list.append(tile)
 
+    def camera(self):
+        pass
+
     def update(self):
         for tile in self.tile_list:
             SCREEN.blit(tile[0], tile[1])
@@ -120,6 +123,9 @@ class Player():
 
         self.player_l = tile_sheet.image_at((24, 200, 50, 50), -1)
         self.stand_l = pg.transform.scale(self.player_l, (2 * self.tile_size, 2 * self.tile_size))
+
+        self.jump_r = tile_sheet.image_at((126, 143, 50, 50), -1)
+        self.jump_l = tile_sheet.image_at((126, 200, 50, 50), -1)
 
         self.run_rt = []
         self.run_lft = []
@@ -167,7 +173,6 @@ class Player():
         self.current_frame = 0
         self.right = True
         self.left = False
-        self.normal = True
         self.jumping = False
         self.falling = False
         self.velo_y = 0
@@ -178,7 +183,7 @@ class Player():
         dy = 0
 
         keys = pg.key.get_pressed()
-        if keys[pg.K_RIGHT]:
+        if keys[pg.K_d]:
             self.left = False
             self.right = True
             dx = 5
@@ -189,7 +194,7 @@ class Player():
                 self.current_frame = (self.current_frame + 1) % len(self.run_rt)
                 self.image = self.run_rt[self.current_frame]
 
-        elif keys[pg.K_LEFT]:
+        elif keys[pg.K_a]:
             self.left = True
             self.right = False
             dx = -5
@@ -207,21 +212,37 @@ class Player():
             elif self.left:
                 self.image = self.stand_l
 
+        if self.jumping or self.falling:
+            if self.right:
+                self.image = self.jump_r
+            elif self.left:
+                self.image = self.jump_l
+            else:
+                self.image = self.stand_r
+
         # jumping
-        if keys[pg.K_SPACE] and self.normal or self.falling:
+        if keys[pg.K_w] and not self.falling:
             self.jumping = True
-            self.normal = False
-            if self.jumping:
-                self.jumpspeed -= 1
-                if self.jumpspeed < -10:
-                    self.jumpspeed += 2
-                if self.jumpspeed >= 0:
-                    self.jumping = False
-                    self.normal = True
-                dy += self.jumpspeed
+            self.jumpspeed -= 3
+            dy += self.jumpspeed
+
+        if not keys[pg.K_w]:
+            self.falling = True
+
+        if self.jumpspeed < -12:
+            self.jumpspeed = -12
+            self.jumping = False
+            self.falling = True
+            dy += self.jumpspeed
+
+        if self.falling:
+            self.jumpspeed += 1
+            if self.jumpspeed > 10:
+                self.jumpspeed = 10
+            dy += self.jumpspeed
 
         # gravity
-        if self.normal:
+        if not self.falling and not self.jumping:
             self.velo_y += 1
             if self.velo_y > 10:
                 self.velo_y = 10
