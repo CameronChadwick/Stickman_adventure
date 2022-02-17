@@ -230,7 +230,6 @@ class Player():
             self.falling = True
 
         if self.jumpspeed < -12:
-            self.jumpspeed = -12
             self.jumping = False
             self.falling = True
             dy += self.jumpspeed
