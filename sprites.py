@@ -186,7 +186,7 @@ class Player():
         if keys[pg.K_d]:
             self.left = False
             self.right = True
-            dx = 5
+            dx = 4
             now = pg.time.get_ticks()
 
             if now - self.last >= self.image_delay:
@@ -197,7 +197,7 @@ class Player():
         elif keys[pg.K_a]:
             self.left = True
             self.right = False
-            dx = -5
+            dx = -4
             now = pg.time.get_ticks()
             if now - self.last >= self.image_delay:
                 self.last = now
@@ -221,12 +221,12 @@ class Player():
                 self.image = self.stand_r
 
         # jumping
-        if keys[pg.K_w] and not self.falling:
+        if keys[pg.K_SPACE] and not self.falling:
             self.jumping = True
             self.jumpspeed -= 3
             dy += self.jumpspeed
 
-        if not keys[pg.K_w]:
+        if not keys[pg.K_SPACE]:
             self.falling = True
 
         if self.jumpspeed < -12:
