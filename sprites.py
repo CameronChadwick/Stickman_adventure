@@ -224,28 +224,28 @@ class Player():
         if keys[pg.K_SPACE] and not self.falling:
             self.jumping = True
             self.jumpspeed -= 3
-            dy += self.jumpspeed
+            dy = self.jumpspeed
 
         if not keys[pg.K_SPACE]:
             self.falling = True
 
-        if self.jumpspeed < -12:
+        if self.jumpspeed < -11:
             self.jumping = False
             self.falling = True
-            dy += self.jumpspeed
+            dy = self.jumpspeed
 
         if self.falling:
             self.jumpspeed += 1
             if self.jumpspeed > 10:
                 self.jumpspeed = 10
-            dy += self.jumpspeed
+            dy = self.jumpspeed
 
         # gravity
         if not self.falling and not self.jumping:
             self.velo_y += 1
             if self.velo_y > 10:
                 self.velo_y = 10
-            dy += self.velo_y
+            dy = self.velo_y
 
         # collision
         for tile in self.tile_set:
