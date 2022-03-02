@@ -80,6 +80,8 @@ class Layout1():
         platform = pg.transform.scale(platform, (TILE_SIZE, TILE_SIZE))
 
         self.tile_list = []
+        self.camera_move = 0
+        self.players = pg.sprite.Group()
 
         for i, row in enumerate(LAYOUT):
             for j, col in enumerate(row):
@@ -101,6 +103,8 @@ class Layout1():
                     self.tile_list.append(tile)
 
     def camera(self):
+        self.left_edge = DISPLAY_WIDTH // 4
+        self.right_edge = DISPLAY_WIDTH - 200
         pass
 
     def update(self):
@@ -224,15 +228,15 @@ class Player():
         if keys[pg.K_SPACE] and not self.falling:
             self.jumping = True
             self.jumpspeed -= 3
-            dy = self.jumpspeed
+            dy += self.jumpspeed
 
         if not keys[pg.K_SPACE]:
-            self.falling = True
+            self.falling += True
 
         if self.jumpspeed < -11:
             self.jumping = False
             self.falling = True
-            dy = self.jumpspeed
+            dy += self.jumpspeed
 
         if self.falling:
             self.jumpspeed += 1
@@ -245,7 +249,7 @@ class Player():
             self.velo_y += 1
             if self.velo_y > 10:
                 self.velo_y = 10
-            dy = self.velo_y
+            dy += self.velo_y
 
         # collision
         for tile in self.tile_set:
