@@ -81,7 +81,6 @@ class Layout1():
 
         self.tile_list = []
         self.camera_move = 0
-        self.players = pg.sprite.Group()
 
         for i, row in enumerate(LAYOUT):
             for j, col in enumerate(row):
@@ -105,9 +104,9 @@ class Layout1():
     def camera(self):
         self.left_edge = DISPLAY_WIDTH // 4
         self.right_edge = DISPLAY_WIDTH - 200
-        pass
 
     def update(self):
+
         for tile in self.tile_list:
             SCREEN.blit(tile[0], tile[1])
 
@@ -119,7 +118,113 @@ class Player():
     def __init__(self, x, y, tile_size, tile_set):
         self.tile_size = tile_size
         self.tile_set = tile_set
+        self.images()
+        self.image = self.stand_r
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.last = pygame.time.get_ticks()
+        self.image_delay = 100
+        self.current_frame = 0
+        self.right = True
+        self.left = False
+        self.jumping = False
+        self.falling = False
+        self.velo_y = 0
+        self.jumpspeed = 0
 
+    def movement(self):
+        dx = 0
+        dy = 0
+
+        keys = pg.key.get_pressed()
+        if keys[pg.K_d]:
+            self.left = False
+            self.right = True
+            dx = 4
+            now = pg.time.get_ticks()
+
+            if now - self.last >= self.image_delay:
+                self.last = now
+                self.current_frame = (self.current_frame + 1) % len(self.run_rt)
+                self.image = self.run_rt[self.current_frame]
+
+        elif keys[pg.K_a]:
+            self.left = True
+            self.right = False
+            dx = -4
+            now = pg.time.get_ticks()
+            if now - self.last >= self.image_delay:
+                self.last = now
+                self.current_frame = (self.current_frame + 1) % len(self.run_lft)
+                self.image = self.run_lft[self.current_frame]
+
+        else:
+            self.current_frame = 0
+            dx = 0
+            if self.right:
+                self.image = self.stand_r
+            elif self.left:
+                self.image = self.stand_l
+
+        if self.jumping or self.falling:
+            if self.right:
+                self.image = self.jump_r
+            elif self.left:
+                self.image = self.jump_l
+            else:
+                self.image = self.stand_r
+        # jumping
+        if keys[pg.K_SPACE] and not self.falling:
+            self.jumping = True
+            self.jumpspeed -= 3
+            dy += self.jumpspeed
+
+        if not keys[pg.K_SPACE]:
+            self.falling += True
+
+        if self.jumpspeed < -11:
+            self.jumping = False
+            self.falling = True
+            dy += self.jumpspeed
+
+        if self.falling:
+            self.jumpspeed += 1
+            if self.jumpspeed > 10:
+                self.jumpspeed = 10
+            dy = self.jumpspeed
+
+        # gravity
+        if not self.falling and not self.jumping:
+            self.velo_y += 1
+            if self.velo_y > 10:
+                self.velo_y = 10
+            dy += self.velo_y
+
+        # collision
+        for tile in self.tile_set:
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y,
+                                   self.rect.width, self.rect.height):
+                dx = 0
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy,
+                                   self.rect.width, self.rect.height):
+                if dy < 0:
+                    dy = tile[1].bottom - self.rect.top
+                elif dy > 0:
+                    dy = tile[1].top - self.rect.bottom
+                    self.falling = False
+
+        # update position
+        self.rect.x += dx
+        self.rect.y += dy
+
+    def update(self):
+        self.movement()
+
+        # draw to screen
+        SCREEN.blit(self.image, self.rect)
+
+    def images(self):
         tile_sheet = SpriteSheet("Assets/OpenGunnerHeroVer2.png")
 
         self.player_r = tile_sheet.image_at((24, 143, 50, 50), -1)
@@ -167,106 +272,3 @@ class Player():
         self.run_lft.append(lft7)
         lft8 = tile_sheet.image_at((381, 375, 50, 50), -1)
         self.run_lft.append(lft8)
-
-        self.image = self.stand_r
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.last = pygame.time.get_ticks()
-        self.image_delay = 100
-        self.current_frame = 0
-        self.right = True
-        self.left = False
-        self.jumping = False
-        self.falling = False
-        self.velo_y = 0
-        self.jumpspeed = 0
-
-    def update(self):
-        dx = 0
-        dy = 0
-
-        keys = pg.key.get_pressed()
-        if keys[pg.K_d]:
-            self.left = False
-            self.right = True
-            dx = 4
-            now = pg.time.get_ticks()
-
-            if now - self.last >= self.image_delay:
-                self.last = now
-                self.current_frame = (self.current_frame + 1) % len(self.run_rt)
-                self.image = self.run_rt[self.current_frame]
-
-        elif keys[pg.K_a]:
-            self.left = True
-            self.right = False
-            dx = -4
-            now = pg.time.get_ticks()
-            if now - self.last >= self.image_delay:
-                self.last = now
-                self.current_frame = (self.current_frame + 1) % len(self.run_lft)
-                self.image = self.run_lft[self.current_frame]
-
-        else:
-            self.current_frame = 0
-            dx = 0
-            if self.right:
-                self.image = self.stand_r
-            elif self.left:
-                self.image = self.stand_l
-
-        if self.jumping or self.falling:
-            if self.right:
-                self.image = self.jump_r
-            elif self.left:
-                self.image = self.jump_l
-            else:
-                self.image = self.stand_r
-
-        # jumping
-        if keys[pg.K_SPACE] and not self.falling:
-            self.jumping = True
-            self.jumpspeed -= 3
-            dy += self.jumpspeed
-
-        if not keys[pg.K_SPACE]:
-            self.falling += True
-
-        if self.jumpspeed < -11:
-            self.jumping = False
-            self.falling = True
-            dy += self.jumpspeed
-
-        if self.falling:
-            self.jumpspeed += 1
-            if self.jumpspeed > 10:
-                self.jumpspeed = 10
-            dy = self.jumpspeed
-
-        # gravity
-        if not self.falling and not self.jumping:
-            self.velo_y += 1
-            if self.velo_y > 10:
-                self.velo_y = 10
-            dy += self.velo_y
-
-        # collision
-        for tile in self.tile_set:
-            if tile[1].colliderect(self.rect.x + dx, self.rect.y,
-                                   self.rect.width, self.rect.height):
-                dx = 0
-            if tile[1].colliderect(self.rect.x, self.rect.y + dy,
-                                   self.rect.width, self.rect.height):
-                if dy < 0:
-                    dy = tile[1].bottom - self.rect.top
-                elif dy > 0:
-                    dy = tile[1].top - self.rect.bottom
-                    self.falling = False
-
-        # update position
-        self.rect.x += dx
-        self.rect.y += dy
-
-        # draw to screen
-        SCREEN.blit(self.image, self.rect)
