@@ -80,7 +80,6 @@ class Layout1():
         platform = pg.transform.scale(platform, (TILE_SIZE, TILE_SIZE))
 
         self.tile_list = []
-        self.camera_move = 0
 
         for i, row in enumerate(LAYOUT):
             for j, col in enumerate(row):
@@ -100,10 +99,6 @@ class Layout1():
                     image_rect.y = y_val
                     tile = (platform, image_rect)
                     self.tile_list.append(tile)
-
-    def camera(self):
-        self.left_edge = DISPLAY_WIDTH // 4
-        self.right_edge = DISPLAY_WIDTH - 200
 
     def update(self):
 
@@ -130,29 +125,51 @@ class Player():
         self.left = False
         self.jumping = False
         self.falling = False
+        self.rt_collide = False
+        self.lft_collide = False
         self.velo_y = 0
         self.jumpspeed = 0
+        self.camera_shift = 0
+        self.dx = 0
+
+    def camera(self):
+        left_edge = DISPLAY_WIDTH // 4
+        right_edge = DISPLAY_WIDTH - left_edge
+        if self.rect.left <= left_edge and self.left:
+            self.camera_shift = 4
+            self.rect.left = left_edge
+            self.dx = 0
+        elif self.rect.right >= right_edge and self.right:
+            self.camera_shift = -4
+            self.rect.right = right_edge
+            self.dx = 0
+        else:
+            self.camera_shift = 0
+
+        for tile in self.tile_set:
+            tile[1].x += self.camera_shift
 
     def movement(self):
-        dx = 0
+        self.dx = 0
         dy = 0
 
         keys = pg.key.get_pressed()
-        if keys[pg.K_d]:
+        if keys[pg.K_d] and not self.rt_collide:
             self.left = False
             self.right = True
-            dx = 4
+            self.lft_collide = False
+            self.dx = 4
             now = pg.time.get_ticks()
-
             if now - self.last >= self.image_delay:
                 self.last = now
                 self.current_frame = (self.current_frame + 1) % len(self.run_rt)
                 self.image = self.run_rt[self.current_frame]
 
-        elif keys[pg.K_a]:
+        elif keys[pg.K_a] and not self.lft_collide:
             self.left = True
             self.right = False
-            dx = -4
+            self.rt_collide = False
+            self.dx = -4
             now = pg.time.get_ticks()
             if now - self.last >= self.image_delay:
                 self.last = now
@@ -161,7 +178,7 @@ class Player():
 
         else:
             self.current_frame = 0
-            dx = 0
+            self.dx = 0
             if self.right:
                 self.image = self.stand_r
             elif self.left:
@@ -173,7 +190,10 @@ class Player():
             elif self.left:
                 self.image = self.jump_l
             else:
-                self.image = self.stand_r
+                if self.right:
+                    self.image = self.stand_r
+                elif self.left:
+                    self.image = self.stand_l
         # jumping
         if keys[pg.K_SPACE] and not self.falling:
             self.jumping = True
@@ -203,9 +223,13 @@ class Player():
 
         # collision
         for tile in self.tile_set:
-            if tile[1].colliderect(self.rect.x + dx, self.rect.y,
+            if tile[1].colliderect(self.rect.x + self.dx, self.rect.y,
                                    self.rect.width, self.rect.height):
-                dx = 0
+                self.dx = 0
+                if self.right:
+                    self.rt_collide = True
+                elif self.left:
+                    self.lft_collide = True
             if tile[1].colliderect(self.rect.x, self.rect.y + dy,
                                    self.rect.width, self.rect.height):
                 if dy < 0:
@@ -215,12 +239,12 @@ class Player():
                     self.falling = False
 
         # update position
-        self.rect.x += dx
+        self.rect.x += self.dx
         self.rect.y += dy
 
     def update(self):
         self.movement()
-
+        self.camera()
         # draw to screen
         SCREEN.blit(self.image, self.rect)
 

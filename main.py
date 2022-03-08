@@ -5,7 +5,7 @@ from settings import *
 pg.init()
 
 # Set Base Screen
-pg.display.set_caption("platformer")
+pg.display.set_caption("Platformer")
 
 level1 = sprites.Layout1()
 layout_list = level1.get_layout()
