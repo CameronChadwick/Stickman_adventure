@@ -78,6 +78,8 @@ class Layout1():
         brick = pg.transform.scale(brick, (TILE_SIZE, TILE_SIZE))
         platform = tile_sheet.image_at((650, 633, 25, 26))
         platform = pg.transform.scale(platform, (TILE_SIZE, TILE_SIZE))
+        door = tile_sheet.image_at((21, 427, 50, 50))
+        door = pg.transform.scale(door, (TILE_SIZE, TILE_SIZE))
 
         self.tile_list = []
 
@@ -98,6 +100,13 @@ class Layout1():
                     image_rect.x = x_val
                     image_rect.y = y_val
                     tile = (platform, image_rect)
+                    self.tile_list.append(tile)
+
+                if col == "3":
+                    image_rect = door.get_rect()
+                    image_rect.x = x_val
+                    image_rect.y = y_val
+                    tile = (door, image_rect)
                     self.tile_list.append(tile)
 
     def update(self):
@@ -236,6 +245,7 @@ class Player():
                 elif dy > 0:
                     dy = tile[1].top - self.rect.bottom
                     self.falling = False
+
 
         # update position
         self.rect.x += self.dx
