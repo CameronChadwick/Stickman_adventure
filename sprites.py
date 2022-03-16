@@ -82,6 +82,7 @@ class Layout1():
         door = pg.transform.scale(door, (TILE_SIZE, TILE_SIZE))
 
         self.tile_list = []
+        self.enemies = pygame.sprite.Group()
 
         for i, row in enumerate(LAYOUT):
             for j, col in enumerate(row):
@@ -109,13 +110,37 @@ class Layout1():
                     tile = (door, image_rect)
                     self.tile_list.append(tile)
 
-    def update(self):
+                if col == "E":
+                    enemy = Enemy(x_val, y_val)
+                    self.tile_list.append(enemy)
 
+    def update(self):
+        for enemy
         for tile in self.tile_list:
             SCREEN.blit(tile[0], tile[1])
 
     def get_layout(self):
         return self.tile_list
+
+
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.images()
+        self.image = self.e_idle_r
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.camera_shift =
+
+    def update(self):
+        SCREEN.blit(self.image, self.rect)
+
+    def images(self):
+        tile_sheet = SpriteSheet("Assets/OpenGunnerEnemySoldier.png")
+
+        self.e_idle_r = tile_sheet.image_at((24, 129, 50, 50), -1)
 
 
 class Player():
