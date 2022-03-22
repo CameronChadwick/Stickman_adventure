@@ -7,7 +7,7 @@ pg.init()
 # Set Base Screen
 pg.display.set_caption("Platformer")
 
-level1 = sprites.Layout1()
+level1 = sprites.Layout()
 layout_list = level1.get_layout()
 player = sprites.Player(210, 550, 25, layout_list)
 

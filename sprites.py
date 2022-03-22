@@ -71,7 +71,7 @@ class SpriteSheet:
         return self.images_at(sprite_rects, colorkey)
 
 
-class Layout1():
+class Layout():
     def __init__(self):
         tile_sheet = SpriteSheet("Assets/OpenGunnerStarterTiles.png")
         brick = tile_sheet.image_at((75, 260, 50, 50))
@@ -110,12 +110,13 @@ class Layout1():
                     tile = (door, image_rect)
                     self.tile_list.append(tile)
 
-                if col == "E":
+                if col == "4":
                     enemy = Enemy(x_val, y_val)
-                    self.tile_list.append(enemy)
+                    self.enemies.add(enemy)
 
     def update(self):
-        for enemy
+        for enemy in self.enemies:
+            enemy.update()
         for tile in self.tile_list:
             SCREEN.blit(tile[0], tile[1])
 
@@ -132,7 +133,6 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.camera_shift =
 
     def update(self):
         SCREEN.blit(self.image, self.rect)
@@ -160,8 +160,8 @@ class Player():
         self.jumping = False
         self.falling = False
         self.velo_y = 0
-        self.jumpspeed = 0
         self.camera_shift = 0
+        self.jumpspeed = 0
         self.dx = 0
 
     def camera(self):
