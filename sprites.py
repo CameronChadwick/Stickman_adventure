@@ -123,6 +123,9 @@ class Layout():
     def get_layout(self):
         return self.tile_list
 
+    def get_enemies(self):
+        return self.enemies
+
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -133,20 +136,28 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.current_frame = 0
+
+    def enemy_movement(self):
+        self.current_frame += 1
+        self.rect.x += 1
 
     def update(self):
         SCREEN.blit(self.image, self.rect)
+        self.enemy_movement()
 
     def images(self):
         tile_sheet = SpriteSheet("Assets/OpenGunnerEnemySoldier.png")
 
         self.e_idle_r = tile_sheet.image_at((24, 129, 50, 50), -1)
+        self.e_idle_l = tile_sheet.image_at((24, 186, 50, 50), -1)
 
 
 class Player():
-    def __init__(self, x, y, tile_size, tile_set):
+    def __init__(self, x, y, tile_size, tile_set, enemies):
         self.tile_size = tile_size
         self.tile_set = tile_set
+        self.enemies = enemies
         self.images()
         self.image = self.stand_r
         self.rect = self.image.get_rect()
@@ -180,6 +191,8 @@ class Player():
 
         for tile in self.tile_set:
             tile[1].x += self.camera_shift
+        for enemy in self.enemies:
+            enemy.rect.x += self.camera_shift
 
     def movement(self):
         self.dx = 0
@@ -270,7 +283,6 @@ class Player():
                 elif dy > 0:
                     dy = tile[1].top - self.rect.bottom
                     self.falling = False
-
 
         # update position
         self.rect.x += self.dx

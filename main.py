@@ -9,7 +9,8 @@ pg.display.set_caption("Platformer")
 
 level1 = sprites.Layout()
 layout_list = level1.get_layout()
-player = sprites.Player(210, 550, 25, layout_list)
+enemies = level1.get_enemies()
+player = sprites.Player(210, 550, 25, layout_list, enemies)
 
 playing = True
 
