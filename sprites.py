@@ -141,18 +141,14 @@ class Enemy(pygame.sprite.Sprite):
         self.right = True
         self.last = pygame.time.get_ticks()
         self.current_frame = 0
+        self.current_frame2 = 0
 
     def enemy_movement(self):
-        self.current_frame += 1
         self.rect.x += 1
+        self.current_frame2 += 1
 
-        if self.current_frame >= 150:
-            self.rect.x -= 2
-            self.left = True
-            self.right = False
 
-        if self.current_frame >= 300:
-            self.current_frame = 0
+
 
     def update(self):
         SCREEN.blit(self.image, self.rect)
