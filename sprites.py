@@ -134,13 +134,25 @@ class Enemy(pygame.sprite.Sprite):
         self.images()
         self.image = self.e_idle_r
         self.rect = self.image.get_rect()
+        self.image_delay = 100
         self.rect.x = x
         self.rect.y = y
+        self.left = False
+        self.right = True
+        self.last = pygame.time.get_ticks()
         self.current_frame = 0
 
     def enemy_movement(self):
         self.current_frame += 1
         self.rect.x += 1
+
+        if self.current_frame >= 150:
+            self.rect.x -= 2
+            self.left = True
+            self.right = False
+
+        if self.current_frame >= 300:
+            self.current_frame = 0
 
     def update(self):
         SCREEN.blit(self.image, self.rect)
@@ -151,6 +163,43 @@ class Enemy(pygame.sprite.Sprite):
 
         self.e_idle_r = tile_sheet.image_at((24, 129, 50, 50), -1)
         self.e_idle_l = tile_sheet.image_at((24, 186, 50, 50), -1)
+
+        self.run_rt = []
+        self.run_lft = []
+
+        rr1 = tile_sheet.image_at((24, 286, 50, 50), -1)
+        self.run_rt.append(rr1)
+        rr2 = tile_sheet.image_at((75, 286, 50, 50), -1)
+        self.run_rt.append(rr2)
+        rr3 = tile_sheet.image_at((126, 286, 50, 50), -1)
+        self.run_rt.append(rr3)
+        rr4 = tile_sheet.image_at((177, 286, 50, 50), -1)
+        self.run_rt.append(rr4)
+        rr5 = tile_sheet.image_at((228, 286, 50, 50), -1)
+        self.run_rt.append(rr5)
+        rr6 = tile_sheet.image_at((279, 286, 50, 50), -1)
+        self.run_rt.append(rr6)
+        rr7 = tile_sheet.image_at((330, 286, 50, 50), -1)
+        self.run_rt.append(rr7)
+        rr8 = tile_sheet.image_at((381, 286, 50, 50), -1)
+        self.run_rt.append(rr8)
+
+        rl1 = tile_sheet.image_at((24, 527, 50, 50), -1)
+        self.run_lft.append(rl1)
+        rl2 = tile_sheet.image_at((75, 527, 50, 50), -1)
+        self.run_lft.append(rl2)
+        rl3 = tile_sheet.image_at((126, 527, 50, 50), -1)
+        self.run_lft.append(rl3)
+        rl4 = tile_sheet.image_at((177, 527, 50, 50), -1)
+        self.run_lft.append(rl4)
+        rl5 = tile_sheet.image_at((228, 527, 50, 50), -1)
+        self.run_lft.append(rl5)
+        rl6 = tile_sheet.image_at((279, 527, 50, 50), -1)
+        self.run_lft.append(rl6)
+        rl7 = tile_sheet.image_at((330, 527, 50, 50), -1)
+        self.run_lft.append(rl7)
+        rl8 = tile_sheet.image_at((381, 527, 50, 50), -1)
+        self.run_lft.append(rl8)
 
 
 class Player():
