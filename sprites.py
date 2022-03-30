@@ -73,15 +73,10 @@ class SpriteSheet:
 
 class Layout():
     def __init__(self):
-        tile_sheet = SpriteSheet("Assets/OpenGunnerStarterTiles.png")
-        brick = tile_sheet.image_at((75, 260, 50, 50))
-        brick = pg.transform.scale(brick, (TILE_SIZE, TILE_SIZE))
-        platform = tile_sheet.image_at((650, 633, 25, 26))
-        platform = pg.transform.scale(platform, (TILE_SIZE, TILE_SIZE))
-        door = tile_sheet.image_at((21, 427, 50, 50))
-        door = pg.transform.scale(door, (TILE_SIZE, TILE_SIZE))
+        self.images()
 
         self.tile_list = []
+        self.bg_list = []
         self.enemies = pygame.sprite.Group()
 
         for i, row in enumerate(LAYOUT):
@@ -90,38 +85,61 @@ class Layout():
                 y_val = i * TILE_SIZE
 
                 if col == "1":
-                    image_rect = brick.get_rect()
+                    image_rect = self.brick.get_rect()
                     image_rect.x = x_val
                     image_rect.y = y_val
-                    tile = (brick, image_rect)
+                    tile = (self.brick, image_rect)
                     self.tile_list.append(tile)
 
                 if col == "2":
-                    image_rect = platform.get_rect()
+                    image_rect = self.platform.get_rect()
                     image_rect.x = x_val
                     image_rect.y = y_val
-                    tile = (platform, image_rect)
+                    tile = (self.platform, image_rect)
                     self.tile_list.append(tile)
 
                 if col == "3":
-                    image_rect = door.get_rect()
+                    image_rect = self.door.get_rect()
                     image_rect.x = x_val
                     image_rect.y = y_val
-                    tile = (door, image_rect)
+                    tile = (self.door, image_rect)
                     self.tile_list.append(tile)
 
                 if col == "4":
+                    image_rect = self.greenbg.get_rect()
+                    image_rect.x = x_val
+                    image_rect.y = y_val
+                    bg = (self.greenbg, image_rect)
+                    self.bg_list.append(bg)
+
+                if col == "E":
                     enemy = Enemy(x_val, y_val)
                     self.enemies.add(enemy)
 
     def update(self):
-        for enemy in self.enemies:
-            enemy.update()
         for tile in self.tile_list:
             SCREEN.blit(tile[0], tile[1])
+        for bg in self.bg_list:
+            SCREEN.blit(bg[0], bg[1])
+        for enemy in self.enemies:
+            enemy.update()
+
+    def images(self):
+        tile_sheet = SpriteSheet("Assets/OpenGunnerStarterTiles.png")
+        brick = tile_sheet.image_at((75, 260, 50, 50))
+        self.brick = pg.transform.scale(brick, (TILE_SIZE, TILE_SIZE))
+        platform = tile_sheet.image_at((650, 633, 25, 26))
+        self.platform = pg.transform.scale(platform, (TILE_SIZE, TILE_SIZE))
+        door = tile_sheet.image_at((21, 427, 50, 50))
+        self.door = pg.transform.scale(door, (TILE_SIZE, TILE_SIZE))
+        greenbg = tile_sheet.image_at((380, 373, 50, 50))
+        self.greenbg = pg.transform.scale(greenbg, (TILE_SIZE, TILE_SIZE))
 
     def get_layout(self):
         return self.tile_list
+
+    def get_bg(self):
+        return self.bg_list
 
     def get_enemies(self):
         return self.enemies
@@ -138,17 +156,40 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.left = False
-        self.right = True
+        self.right = False
         self.last = pygame.time.get_ticks()
         self.current_frame = 0
-        self.current_frame2 = 0
+        self.enemy_walk = 0
 
     def enemy_movement(self):
-        self.rect.x += 1
-        self.current_frame2 += 1
+        self.current_frame += 1
 
+        if self.current_frame >= 1:
+            self.right = True
+            self.left = False
 
+        if self.current_frame >= 120:
+            self.left = True
+            self.right = False
 
+        if self.current_frame >= 240:
+            self.current_frame = 0
+
+        if self.right:
+            self.rect.x += 1
+            now = pg.time.get_ticks()
+            if now - self.last >= self.image_delay:
+                self.last = now
+                self.enemy_walk = (self.enemy_walk + 1) % len(self.run_rt)
+                self.image = self.run_rt[self.enemy_walk]
+
+        elif self.left:
+            self.rect.x += -1
+            now = pg.time.get_ticks()
+            if now - self.last >= self.image_delay:
+                self.last = now
+                self.enemy_walk = (self.enemy_walk + 1) % len(self.run_lft)
+                self.image = self.run_lft[self.enemy_walk]
 
     def update(self):
         SCREEN.blit(self.image, self.rect)
@@ -180,28 +221,29 @@ class Enemy(pygame.sprite.Sprite):
         rr8 = tile_sheet.image_at((381, 286, 50, 50), -1)
         self.run_rt.append(rr8)
 
-        rl1 = tile_sheet.image_at((24, 527, 50, 50), -1)
+        rl1 = tile_sheet.image_at((24, 346, 50, 50), -1)
         self.run_lft.append(rl1)
-        rl2 = tile_sheet.image_at((75, 527, 50, 50), -1)
+        rl2 = tile_sheet.image_at((75, 346, 50, 50), -1)
         self.run_lft.append(rl2)
-        rl3 = tile_sheet.image_at((126, 527, 50, 50), -1)
+        rl3 = tile_sheet.image_at((126, 346, 50, 50), -1)
         self.run_lft.append(rl3)
-        rl4 = tile_sheet.image_at((177, 527, 50, 50), -1)
+        rl4 = tile_sheet.image_at((177, 346, 50, 50), -1)
         self.run_lft.append(rl4)
-        rl5 = tile_sheet.image_at((228, 527, 50, 50), -1)
+        rl5 = tile_sheet.image_at((228, 346, 50, 50), -1)
         self.run_lft.append(rl5)
-        rl6 = tile_sheet.image_at((279, 527, 50, 50), -1)
+        rl6 = tile_sheet.image_at((279, 346, 50, 50), -1)
         self.run_lft.append(rl6)
-        rl7 = tile_sheet.image_at((330, 527, 50, 50), -1)
+        rl7 = tile_sheet.image_at((330, 346, 50, 50), -1)
         self.run_lft.append(rl7)
-        rl8 = tile_sheet.image_at((381, 527, 50, 50), -1)
+        rl8 = tile_sheet.image_at((381, 346, 50, 50), -1)
         self.run_lft.append(rl8)
 
 
 class Player():
-    def __init__(self, x, y, tile_size, tile_set, enemies):
+    def __init__(self, x, y, tile_size, tile_set, enemies, bg_set):
         self.tile_size = tile_size
         self.tile_set = tile_set
+        self.bg_set = bg_set
         self.enemies = enemies
         self.images()
         self.image = self.stand_r
@@ -236,6 +278,8 @@ class Player():
 
         for tile in self.tile_set:
             tile[1].x += self.camera_shift
+        for bg in self.bg_set:
+            bg[1].x += self.camera_shift
         for enemy in self.enemies:
             enemy.rect.x += self.camera_shift
 
@@ -291,25 +335,19 @@ class Player():
             dy += self.jumpspeed
 
         if not keys[pg.K_SPACE]:
-            self.falling += True
+            self.falling = True
 
         if self.jumpspeed < -11:
             self.jumping = False
             self.falling = True
             dy += self.jumpspeed
 
+        # gravity
         if self.falling:
             self.jumpspeed += 1
             if self.jumpspeed > 10:
                 self.jumpspeed = 10
             dy = self.jumpspeed
-
-        # gravity
-        if not self.falling and not self.jumping:
-            self.velo_y += 1
-            if self.velo_y > 10:
-                self.velo_y = 10
-            dy += self.velo_y
 
         # collision
         for tile in self.tile_set:

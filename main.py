@@ -9,8 +9,9 @@ pg.display.set_caption("Platformer")
 
 level1 = sprites.Layout()
 layout_list = level1.get_layout()
+bg_list = level1.get_bg()
 enemies = level1.get_enemies()
-player = sprites.Player(210, 550, 25, layout_list, enemies)
+player = sprites.Player(210, 550, 25, layout_list, enemies, bg_list)
 
 playing = True
 
@@ -27,7 +28,7 @@ while playing:
         if event.type == pg.QUIT:
             playing = False
 
-    SCREEN.fill(BLUE)
+    SCREEN.fill(WHITE)
 
     level1.update()
     player.update()
