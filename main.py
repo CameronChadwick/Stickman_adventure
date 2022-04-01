@@ -1,5 +1,7 @@
 import pygame as pg
-import sprites
+import pygame.sprite
+
+from sprites import *
 from settings import *
 
 pg.init()
@@ -7,11 +9,11 @@ pg.init()
 # Set Base Screen
 pg.display.set_caption("Platformer")
 
-level1 = sprites.Layout()
+level1 = Layout()
 layout_list = level1.get_layout()
 bg_list = level1.get_bg()
 enemies = level1.get_enemies()
-player = sprites.Player(210, 550, 25, layout_list, enemies, bg_list)
+player = Player(210, 550, 25, layout_list, enemies, bg_list)
 
 playing = True
 
@@ -28,7 +30,7 @@ while playing:
         if event.type == pg.QUIT:
             playing = False
 
-    SCREEN.fill(WHITE)
+    SCREEN.fill(BLUE)
 
     level1.update()
     player.update()

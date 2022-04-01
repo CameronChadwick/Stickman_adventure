@@ -78,6 +78,7 @@ class Layout():
         self.tile_list = []
         self.bg_list = []
         self.enemies = pygame.sprite.Group()
+        self.player_group = pygame.sprite.GroupSingle()
 
         for i, row in enumerate(LAYOUT):
             for j, col in enumerate(row):
@@ -106,10 +107,10 @@ class Layout():
                     self.tile_list.append(tile)
 
                 if col == "4":
-                    image_rect = self.greenbg.get_rect()
+                    image_rect = self.greenbg1.get_rect()
                     image_rect.x = x_val
                     image_rect.y = y_val
-                    bg = (self.greenbg, image_rect)
+                    bg = (self.greenbg1, image_rect)
                     self.bg_list.append(bg)
 
                 if col == "E":
@@ -123,6 +124,8 @@ class Layout():
             SCREEN.blit(bg[0], bg[1])
         for enemy in self.enemies:
             enemy.update()
+        for player in self.player_group:
+            player.update()
 
     def images(self):
         tile_sheet = SpriteSheet("Assets/OpenGunnerStarterTiles.png")
@@ -132,8 +135,8 @@ class Layout():
         self.platform = pg.transform.scale(platform, (TILE_SIZE, TILE_SIZE))
         door = tile_sheet.image_at((21, 427, 50, 50))
         self.door = pg.transform.scale(door, (TILE_SIZE, TILE_SIZE))
-        greenbg = tile_sheet.image_at((380, 373, 50, 50))
-        self.greenbg = pg.transform.scale(greenbg, (TILE_SIZE, TILE_SIZE))
+        greenbg1 = tile_sheet.image_at((434, 373, 50, 50))
+        self.greenbg1 = pg.transform.scale(greenbg1, (TILE_SIZE, TILE_SIZE))
 
     def get_layout(self):
         return self.tile_list
@@ -200,6 +203,11 @@ class Enemy(pygame.sprite.Sprite):
 
         self.e_idle_r = tile_sheet.image_at((24, 129, 50, 50), -1)
         self.e_idle_l = tile_sheet.image_at((24, 186, 50, 50), -1)
+
+        self.dmgr = tile_sheet.image_at((202, 129, 50, 50), -1)
+
+
+
 
         self.run_rt = []
         self.run_lft = []
