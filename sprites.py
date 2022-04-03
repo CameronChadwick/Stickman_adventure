@@ -78,6 +78,7 @@ class Layout():
         self.tile_list = []
         self.bg_list = []
         self.enemies = pygame.sprite.Group()
+        self.bullet_group = pygame.sprite.Group()
         self.player_group = pygame.sprite.GroupSingle()
 
         for i, row in enumerate(LAYOUT):
@@ -106,18 +107,16 @@ class Layout():
                     tile = (self.door, image_rect)
                     self.tile_list.append(tile)
 
-                if col == "4":
-                    image_rect = self.greenbg1.get_rect()
-                    image_rect.x = x_val
-                    image_rect.y = y_val
-                    bg = (self.greenbg1, image_rect)
-                    self.bg_list.append(bg)
+                if col == "P":
+                    self.player = Player(x_val, y_val, 25, self.get_layout(), self.enemies, self.get_bg())
+                    self.player_group.add(self.player)
 
                 if col == "E":
-                    enemy = Enemy(x_val, y_val)
-                    self.enemies.add(enemy)
+                    self.enemy = Enemy(x_val, y_val)
+                    self.enemies.add(self.enemy)
 
     def update(self):
+
         for tile in self.tile_list:
             SCREEN.blit(tile[0], tile[1])
         for bg in self.bg_list:
@@ -135,8 +134,6 @@ class Layout():
         self.platform = pg.transform.scale(platform, (TILE_SIZE, TILE_SIZE))
         door = tile_sheet.image_at((21, 427, 50, 50))
         self.door = pg.transform.scale(door, (TILE_SIZE, TILE_SIZE))
-        greenbg1 = tile_sheet.image_at((434, 373, 50, 50))
-        self.greenbg1 = pg.transform.scale(greenbg1, (TILE_SIZE, TILE_SIZE))
 
     def get_layout(self):
         return self.tile_list
@@ -146,6 +143,22 @@ class Layout():
 
     def get_enemies(self):
         return self.enemies
+
+
+# class Shoot(pygame.sprite.Sprite):
+#     def __init__(self, x, y):
+#         pygame.sprite.Sprite.__init__(self)
+#         self.image = pygame.Surface((BULLET_WIDTH, BULLET_HEIGHT))
+#         self.rect = self.image.get_rect()
+#         self.image.fill(BULLET_COLOR)
+#         self.rect.x = x
+#         self.rect.y = y
+#         pygame.draw.rect(self.image, WHITE, [self.rect.x, self.rect.y, BULLET_WIDTH, BULLET_HEIGHT])
+#
+#         self.x_velo = 4
+#
+#     def update(self):
+#         self.rect.x += self.x_velo
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -247,8 +260,10 @@ class Enemy(pygame.sprite.Sprite):
         self.run_lft.append(rl8)
 
 
-class Player():
+class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, tile_size, tile_set, enemies, bg_set):
+        pygame.sprite.Sprite.__init__(self)
+
         self.tile_size = tile_size
         self.tile_set = tile_set
         self.bg_set = bg_set
