@@ -141,25 +141,6 @@ class Layout():
     def get_bg(self):
         return self.bg_list
 
-    def get_enemies(self):
-        return self.enemies
-
-
-# class Shoot(pygame.sprite.Sprite):
-#     def __init__(self, x, y):
-#         pygame.sprite.Sprite.__init__(self)
-#         self.image = pygame.Surface((BULLET_WIDTH, BULLET_HEIGHT))
-#         self.rect = self.image.get_rect()
-#         self.image.fill(BULLET_COLOR)
-#         self.rect.x = x
-#         self.rect.y = y
-#         pygame.draw.rect(self.image, WHITE, [self.rect.x, self.rect.y, BULLET_WIDTH, BULLET_HEIGHT])
-#
-#         self.x_velo = 4
-#
-#     def update(self):
-#         self.rect.x += self.x_velo
-
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -207,6 +188,9 @@ class Enemy(pygame.sprite.Sprite):
                 self.enemy_walk = (self.enemy_walk + 1) % len(self.run_lft)
                 self.image = self.run_lft[self.enemy_walk]
 
+    def enemy_health(self):
+        pass
+
     def update(self):
         SCREEN.blit(self.image, self.rect)
         self.enemy_movement()
@@ -218,9 +202,7 @@ class Enemy(pygame.sprite.Sprite):
         self.e_idle_l = tile_sheet.image_at((24, 186, 50, 50), -1)
 
         self.dmgr = tile_sheet.image_at((202, 129, 50, 50), -1)
-
-
-
+        self.dmgl = tile_sheet.image_at((202, 186, 50, 50), -1)
 
         self.run_rt = []
         self.run_lft = []

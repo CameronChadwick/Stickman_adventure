@@ -10,6 +10,7 @@ pg.init()
 pg.display.set_caption("Platformer")
 
 bullet_group = pygame.sprite.Group()
+enemy_hits = 0
 
 
 class Shoot(pygame.sprite.Sprite):
@@ -24,12 +25,14 @@ class Shoot(pygame.sprite.Sprite):
 
         self.x_velo = 12
 
-    def update(self):
-        # directional firing needs work
-        if level1.player.left:
-            self.rect.x -= self.x_velo
-        elif level1.player.right:
+    def directional_firing(self):
+        if self.rect.x > level1.player.rect.centerx:
             self.rect.x += self.x_velo
+        if self.rect.x < level1.player.rect.centerx:
+            self.rect.x -= self.x_velo
+
+    def update(self):
+        self.directional_firing()
 
 
 level1 = Layout()
@@ -47,11 +50,18 @@ while playing:
             if event.key == pg.K_ESCAPE:
                 playing = False
             if event.key == pygame.K_e:
-                bullet = Shoot(level1.player.rect.centerx,
-                               level1.player.rect.top + 18)
-                bullet_group.add(bullet)
+                if level1.player.left:
+                    bullet = Shoot(level1.player.rect.centerx - 27,
+                                   level1.player.rect.top + 17)
+                    bullet_group.add(bullet)
+                if level1.player.right:
+                    bullet = Shoot(level1.player.rect.centerx + 20,
+                                   level1.player.rect.top + 17)
+                    bullet_group.add(bullet)
         if event.type == pg.QUIT:
             playing = False
+
+    enemyhit = pygame.sprite.groupcollide(bullet_group, level1.enemies, True, False)
 
     SCREEN.fill(BLUE)
 
