@@ -60,8 +60,14 @@ while playing:
                     bullet_group.add(bullet)
         if event.type == pg.QUIT:
             playing = False
+# enemy collision
+    enemyhit = pygame.sprite.groupcollide(bullet_group, level1.enemies, True, True)
 
-    enemyhit = pygame.sprite.groupcollide(bullet_group, level1.enemies, True, False)
+# door collision
+    for tile in level1.tile_list:
+        if tile[1].colliderect(level1.player.rect.x + 3, level1.player.rect.y,
+                                level1.player.rect.width, level1.player.rect.height) and len(tile) == 3:
+            pass
 
     SCREEN.fill(BLUE)
 

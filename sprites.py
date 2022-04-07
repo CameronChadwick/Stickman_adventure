@@ -79,6 +79,7 @@ class Layout():
         self.bg_list = []
         self.enemies = pygame.sprite.Group()
         self.bullet_group = pygame.sprite.Group()
+        self.door_group = pygame.sprite.Group()
         self.player_group = pygame.sprite.GroupSingle()
 
         for i, row in enumerate(LAYOUT):
@@ -100,11 +101,11 @@ class Layout():
                     tile = (self.platform, image_rect)
                     self.tile_list.append(tile)
 
-                if col == "3":
+                if col == "D":
                     image_rect = self.door.get_rect()
                     image_rect.x = x_val
                     image_rect.y = y_val
-                    tile = (self.door, image_rect)
+                    tile = (self.door, image_rect, 1)
                     self.tile_list.append(tile)
 
                 if col == "P":
@@ -132,8 +133,8 @@ class Layout():
         self.brick = pg.transform.scale(brick, (TILE_SIZE, TILE_SIZE))
         platform = tile_sheet.image_at((650, 633, 25, 26))
         self.platform = pg.transform.scale(platform, (TILE_SIZE, TILE_SIZE))
-        door = tile_sheet.image_at((21, 427, 50, 50))
-        self.door = pg.transform.scale(door, (TILE_SIZE, TILE_SIZE))
+        door = tile_sheet.image_at((21, 373, 50, 50))
+        self.door = pg.transform.scale(door, (TILE_SIZE * 2, TILE_SIZE * 2))
 
     def get_layout(self):
         return self.tile_list
@@ -157,6 +158,7 @@ class Enemy(pygame.sprite.Sprite):
         self.last = pygame.time.get_ticks()
         self.current_frame = 0
         self.enemy_walk = 0
+        self.health = 2
 
     def enemy_movement(self):
         self.current_frame += 1
@@ -187,9 +189,6 @@ class Enemy(pygame.sprite.Sprite):
                 self.last = now
                 self.enemy_walk = (self.enemy_walk + 1) % len(self.run_lft)
                 self.image = self.run_lft[self.enemy_walk]
-
-    def enemy_health(self):
-        pass
 
     def update(self):
         SCREEN.blit(self.image, self.rect)
