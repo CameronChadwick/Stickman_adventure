@@ -11,6 +11,17 @@ pg.display.set_caption("Platformer")
 
 bullet_group = pygame.sprite.Group()
 enemy_hits = 0
+level = 1
+max_level = 2
+
+player_group = pygame.sprite.GroupSingle()
+
+game_layout = Layout()
+layout_list = game_layout.get_layout()
+
+
+player = Player(150, 600, 25, layout_list, game_layout.enemies)
+player_group.add(player)
 
 
 class Shoot(pygame.sprite.Sprite):
@@ -26,16 +37,14 @@ class Shoot(pygame.sprite.Sprite):
         self.x_velo = 12
 
     def directional_firing(self):
-        if self.rect.x > level1.player.rect.centerx:
+        if self.rect.x > player.rect.centerx:
             self.rect.x += self.x_velo
-        if self.rect.x < level1.player.rect.centerx:
+        if self.rect.x < player.rect.centerx:
             self.rect.x -= self.x_velo
 
     def update(self):
         self.directional_firing()
 
-
-level1 = Layout()
 
 playing = True
 
@@ -50,28 +59,29 @@ while playing:
             if event.key == pg.K_ESCAPE:
                 playing = False
             if event.key == pygame.K_e:
-                if level1.player.left:
-                    bullet = Shoot(level1.player.rect.centerx - 27,
-                                   level1.player.rect.top + 17)
+                if player.left:
+                    bullet = Shoot(player.rect.centerx - 27,
+                                   player.rect.top + 17)
                     bullet_group.add(bullet)
-                if level1.player.right:
-                    bullet = Shoot(level1.player.rect.centerx + 20,
-                                   level1.player.rect.top + 17)
+                if player.right:
+                    bullet = Shoot(player.rect.centerx + 20,
+                                   player.rect.top + 17)
                     bullet_group.add(bullet)
         if event.type == pg.QUIT:
             playing = False
 # enemy collision
-    enemyhit = pygame.sprite.groupcollide(bullet_group, level1.enemies, True, True)
+    enemyhit = pygame.sprite.groupcollide(bullet_group, game_layout.enemies, True, True)
 
 # door collision
-    for tile in level1.tile_list:
-        if tile[1].colliderect(level1.player.rect.x + 3, level1.player.rect.y,
-                                level1.player.rect.width, level1.player.rect.height) and len(tile) == 3:
+    for tile in game_layout.tile_list:
+        if tile[1].colliderect(player.rect.x + 3, player.rect.y,
+                                player.rect.width, player.rect.height) and len(tile) == 3:
             pass
 
     SCREEN.fill(BLUE)
 
-    level1.update()
+    game_layout.update()
+    player.update()
     bullet_group.update()
     bullet_group.draw(SCREEN)
 

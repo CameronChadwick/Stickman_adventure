@@ -76,11 +76,8 @@ class Layout():
         self.images()
 
         self.tile_list = []
-        self.bg_list = []
         self.enemies = pygame.sprite.Group()
         self.bullet_group = pygame.sprite.Group()
-        self.door_group = pygame.sprite.Group()
-        self.player_group = pygame.sprite.GroupSingle()
 
         for i, row in enumerate(LAYOUT):
             for j, col in enumerate(row):
@@ -108,10 +105,6 @@ class Layout():
                     tile = (self.door, image_rect, 1)
                     self.tile_list.append(tile)
 
-                if col == "P":
-                    self.player = Player(x_val, y_val, 25, self.get_layout(), self.enemies, self.get_bg())
-                    self.player_group.add(self.player)
-
                 if col == "E":
                     self.enemy = Enemy(x_val, y_val)
                     self.enemies.add(self.enemy)
@@ -120,12 +113,8 @@ class Layout():
 
         for tile in self.tile_list:
             SCREEN.blit(tile[0], tile[1])
-        for bg in self.bg_list:
-            SCREEN.blit(bg[0], bg[1])
         for enemy in self.enemies:
             enemy.update()
-        for player in self.player_group:
-            player.update()
 
     def images(self):
         tile_sheet = SpriteSheet("Assets/OpenGunnerStarterTiles.png")
@@ -138,9 +127,6 @@ class Layout():
 
     def get_layout(self):
         return self.tile_list
-
-    def get_bg(self):
-        return self.bg_list
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -242,12 +228,11 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, tile_size, tile_set, enemies, bg_set):
+    def __init__(self, x, y, tile_size, tile_set, enemies):
         pygame.sprite.Sprite.__init__(self)
 
         self.tile_size = tile_size
         self.tile_set = tile_set
-        self.bg_set = bg_set
         self.enemies = enemies
         self.images()
         self.image = self.stand_r
@@ -282,8 +267,6 @@ class Player(pygame.sprite.Sprite):
 
         for tile in self.tile_set:
             tile[1].x += self.camera_shift
-        for bg in self.bg_set:
-            bg[1].x += self.camera_shift
         for enemy in self.enemies:
             enemy.rect.x += self.camera_shift
 
