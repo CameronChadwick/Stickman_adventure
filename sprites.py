@@ -72,14 +72,18 @@ class SpriteSheet:
 
 
 class Layout():
-    def __init__(self):
+    def __init__(self, layout):
         self.images()
 
+        self.layout = layout
         self.tile_list = []
         self.enemies = pygame.sprite.Group()
         self.bullet_group = pygame.sprite.Group()
 
-        for i, row in enumerate(LAYOUT):
+    def create(self, level):
+        self.tile_list = []
+        level_num = self.layout[level - 1]
+        for i, row in enumerate(level_num):
             for j, col in enumerate(row):
                 x_val = j * TILE_SIZE
                 y_val = i * TILE_SIZE
@@ -106,15 +110,14 @@ class Layout():
                     self.tile_list.append(tile)
 
                 if col == "E":
-                    self.enemy = Enemy(x_val, y_val)
-                    self.enemies.add(self.enemy)
+                    enemy = Enemy(x_val, y_val)
+                    self.enemies.add(enemy)
 
-    def update(self):
-
+    def update(self, display):
         for tile in self.tile_list:
-            SCREEN.blit(tile[0], tile[1])
+            display.blit(tile[0], tile[1])
         for enemy in self.enemies:
-            enemy.update()
+            enemy.update(display)
 
     def images(self):
         tile_sheet = SpriteSheet("Assets/OpenGunnerStarterTiles.png")
@@ -122,7 +125,7 @@ class Layout():
         self.brick = pg.transform.scale(brick, (TILE_SIZE, TILE_SIZE))
         platform = tile_sheet.image_at((650, 633, 25, 26))
         self.platform = pg.transform.scale(platform, (TILE_SIZE, TILE_SIZE))
-        door = tile_sheet.image_at((21, 373, 50, 50))
+        door = tile_sheet.image_at((21, 427, 50, 50))
         self.door = pg.transform.scale(door, (TILE_SIZE * 2, TILE_SIZE * 2))
 
     def get_layout(self):
@@ -176,8 +179,8 @@ class Enemy(pygame.sprite.Sprite):
                 self.enemy_walk = (self.enemy_walk + 1) % len(self.run_lft)
                 self.image = self.run_lft[self.enemy_walk]
 
-    def update(self):
-        SCREEN.blit(self.image, self.rect)
+    def update(self, display):
+        display.blit(self.image, self.rect)
         self.enemy_movement()
 
     def images(self):
@@ -358,10 +361,10 @@ class Player(pygame.sprite.Sprite):
         self.rect.x += self.dx
         self.rect.y += dy
 
-    def update(self):
+    def update(self, display):
         self.movement()
         # draw to screen
-        SCREEN.blit(self.image, self.rect)
+        display.blit(self.image, self.rect)
 
     def images(self):
         tile_sheet = SpriteSheet("Assets/OpenGunnerHeroVer2.png")

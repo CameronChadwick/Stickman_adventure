@@ -1,26 +1,19 @@
-import pygame as pg
-import pygame.sprite
-
-from sprites import *
+import pygame
+import sprites
 from settings import *
 
+# base game elements
 pg.init()
-
-# Set Base Screen
+SCREEN = pg.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 pg.display.set_caption("Platformer")
 
-bullet_group = pygame.sprite.Group()
-enemy_hits = 0
-level = 1
-max_level = 2
-
-player_group = pygame.sprite.GroupSingle()
-
-game_layout = Layout()
+game_layout = sprites.Layout(LAYOUT)
 layout_list = game_layout.get_layout()
 
+player_group = pygame.sprite.Group()
+player_bullet_group = pygame.sprite.Group()
 
-player = Player(150, 600, 25, layout_list, game_layout.enemies)
+player = sprites.Player(225, 525, 25, layout_list, game_layout.enemies)
 player_group.add(player)
 
 
@@ -46,45 +39,85 @@ class Shoot(pygame.sprite.Sprite):
         self.directional_firing()
 
 
+def reset_level(new_level):
+    global player, player_group, game_layout, layout_list
+    # empty groups
+    player_group.empty()
+    game_layout.enemies.empty()
+    player_bullet_group.empty()
+
+    # create level
+    game_layout.create(new_level)
+    layout_list = game_layout.get_layout()
+    player_group = pygame.sprite.Group()
+    player = sprites.Player(225, 525, 25, layout_list, game_layout.enemies)
+    player_group.add(player)
+
+    return layout_list
+
+
+def game_play():
+
+    enemy_hits = 0
+    level = 1
+    max_level = 2
+
+    layout_lis = reset_level(level)
+
+    running = True
+
+    clock = pg.time.Clock()
+
+    while running:
+
+        clock.tick(FPS)
+
+        for event in pg.event.get():
+            if event.type == pg.KEYDOWN:    # allow for q key to quit the game
+                if event.key == pg.K_ESCAPE:
+                    running = False
+                if event.key == pygame.K_e:
+                    if player.left:
+                        bullet = Shoot(player.rect.centerx - 27,
+                                       player.rect.top + 17)
+                        player_bullet_group.add(bullet)
+                    if player.right:
+                        bullet = Shoot(player.rect.centerx + 20,
+                                       player.rect.top + 17)
+                        player_bullet_group.add(bullet)
+            if event.type == pg.QUIT:
+                running = False
+
+    # enemy collision
+        enemyhit = pygame.sprite.groupcollide(player_bullet_group, game_layout.enemies, True, True)
+
+    # door collision
+        for tile in layout_lis:
+            if tile[1].colliderect(player.rect.x + 3, player.rect.y,
+                                   player.rect.width, player.rect.height) and len(tile) == 3:
+                level += 1
+
+                if level <= max_level:
+
+                    layout_lis = reset_level(level)
+
+                else:
+                    running = False
+
+        SCREEN.fill(BLUE)
+
+        player_group.update(SCREEN)
+        game_layout.update(SCREEN)
+        player_bullet_group.update()
+        player_bullet_group.draw(SCREEN)
+
+        pg.display.flip()
+
+    pg.quit()
+
+
 playing = True
-
-clock = pg.time.Clock()
-
 while playing:
-
-    clock.tick(FPS)
-
-    for event in pg.event.get():
-        if event.type == pg.KEYDOWN:    # allow for q key to quit the game
-            if event.key == pg.K_ESCAPE:
-                playing = False
-            if event.key == pygame.K_e:
-                if player.left:
-                    bullet = Shoot(player.rect.centerx - 27,
-                                   player.rect.top + 17)
-                    bullet_group.add(bullet)
-                if player.right:
-                    bullet = Shoot(player.rect.centerx + 20,
-                                   player.rect.top + 17)
-                    bullet_group.add(bullet)
-        if event.type == pg.QUIT:
-            playing = False
-# enemy collision
-    enemyhit = pygame.sprite.groupcollide(bullet_group, game_layout.enemies, True, True)
-
-# door collision
-    for tile in game_layout.tile_list:
-        if tile[1].colliderect(player.rect.x + 3, player.rect.y,
-                                player.rect.width, player.rect.height) and len(tile) == 3:
-            pass
-
-    SCREEN.fill(BLUE)
-
-    game_layout.update()
-    player.update()
-    bullet_group.update()
-    bullet_group.draw(SCREEN)
-
-    pg.display.flip()
+    game_play()
 
 pg.quit()
