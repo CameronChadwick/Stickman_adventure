@@ -13,18 +13,21 @@ layout_list = game_layout.get_layout()
 player_group = pygame.sprite.Group()
 player_bullet_group = pygame.sprite.Group()
 
+
 player = sprites.Player(225, 525, 25, layout_list, game_layout.enemies)
 player_group.add(player)
 
 
 class Shoot(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, width, height):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((BULLET_WIDTH, BULLET_HEIGHT))
+        self.image = pygame.Surface((width, height))
         self.rect = self.image.get_rect()
         self.image.fill(BULLET_COLOR)
         self.rect.x = x
         self.rect.y = y
+        self.rect.width = width
+        self.rect.height = height
         pygame.draw.rect(self.image, WHITE, [self.rect.x, self.rect.y, BULLET_WIDTH, BULLET_HEIGHT])
 
         self.x_velo = 12
@@ -79,19 +82,16 @@ def game_play():
                 if event.key == pygame.K_e:
                     if player.left:
                         bullet = Shoot(player.rect.centerx - 27,
-                                       player.rect.top + 17)
+                                       player.rect.top + 17, BULLET_WIDTH, BULLET_HEIGHT)
                         player_bullet_group.add(bullet)
                     if player.right:
                         bullet = Shoot(player.rect.centerx + 20,
-                                       player.rect.top + 17)
+                                       player.rect.top + 17, BULLET_WIDTH, BULLET_HEIGHT)
                         player_bullet_group.add(bullet)
             if event.type == pg.QUIT:
                 running = False
 
-    # enemy collision
-        enemyhit = pygame.sprite.groupcollide(player_bullet_group, game_layout.enemies, True, True)
-
-    # door collision
+            # door collision
         for tile in layout_lis:
             if tile[1].colliderect(player.rect.x + 3, player.rect.y,
                                    player.rect.width, player.rect.height) and len(tile) == 3:

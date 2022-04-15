@@ -110,8 +110,8 @@ class Layout():
                     self.tile_list.append(tile)
 
                 if col == "E":
-                    enemy = Enemy(x_val, y_val)
-                    self.enemies.add(enemy)
+                    self.enemy = Enemy(x_val, y_val)
+                    self.enemies.add(self.enemy)
 
     def update(self, display):
         for tile in self.tile_list:
